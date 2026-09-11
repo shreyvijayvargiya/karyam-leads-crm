@@ -193,6 +193,7 @@ export function LeadsPage() {
 						<Button
 							size="icon"
 							variant="ghost"
+							title="Edit"
 							onClick={() => {
 								setEditing(row.original);
 								setForm({
@@ -211,6 +212,7 @@ export function LeadsPage() {
 						<Button
 							size="icon"
 							variant="ghost"
+							title="Delete"
 							onClick={() => deleteLead(activeId, row.original.id)}
 						>
 							<Trash2 className="h-4 w-4" />
@@ -369,7 +371,8 @@ export function LeadsPage() {
 				<div>
 					<h1 className="text-2xl font-semibold tracking-tight">{table.name}</h1>
 					<p className="mt-1 text-sm text-muted-foreground">
-						Sort, search, filter, edit rows. WhatsApp opens Web chat; SMS opens the send modal.
+						Sort, search, filter, edit rows. Chat icon opens WhatsApp Web. Message icon
+						sends SMS from your iPhone via this Mac.
 					</p>
 				</div>
 				<div className="flex flex-wrap gap-2">
@@ -587,8 +590,8 @@ export function LeadsPage() {
 							Send SMS {smsTargets.length > 1 ? `to ${smsTargets.length} leads` : ""}
 						</DialogTitle>
 						<DialogDescription>
-							Uses Fast2SMS for Indian mobiles. Successful sends mark status as{" "}
-							<strong>send</strong>.
+							Sends from your iPhone SIM through Mac Messages (Text Message Forwarding).
+							Successful sends mark status as <strong>send</strong>.
 						</DialogDescription>
 					</DialogHeader>
 					{smsTargets.length === 1 ? (

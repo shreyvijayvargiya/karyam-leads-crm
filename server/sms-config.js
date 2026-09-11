@@ -1,10 +1,5 @@
 /**
- * Paste your Fast2SMS Authorization key from
- * https://www.fast2sms.com (Dev API). This file is gitignored.
+ * Local iPhone SMS via Mac Messages — no API key.
+ * Enable Text Message Forwarding on the iPhone for this Mac.
  */
-export const FAST2SMS_API_KEY = "pV9N0rvj4KFUs1tnMXiAlweQRbWG2kZgaDL6E3dCmJucIB5Yh7ECzl5q4vS1HcVsUkZwIJpQATjgW8FG";
-
-export function smsReady() {
-	const key = String(FAST2SMS_API_KEY || "").trim();
-	return key.length > 20 && !key.includes("PASTE_");
-}
+export const SMS_PROVIDER = "iphone-messages";

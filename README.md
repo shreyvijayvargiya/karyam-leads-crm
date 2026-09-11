@@ -1,6 +1,6 @@
 # Karyam Leads CRM
 
-Vite + Tailwind + shadcn + Framer Motion CRM for manufacturer outreach. Notion tokens live on `:root` / `html[data-theme="notion"]`. Data lives in the browser. The only server process is Fast2SMS.
+Vite + Tailwind + shadcn CRM. Notion theme. Leads live in the browser.
 
 ## Run
 
@@ -10,21 +10,39 @@ npm run dev
 ```
 
 App: http://localhost:3002  
-SMS API: http://127.0.0.1:8787
+SMS helper: http://127.0.0.1:8787 (Mac Messages → iPhone SIM)
 
-## Fast2SMS (1 key)
+## How to send SMS from your iPhone (free, local)
 
-Copy `server/sms-config.example.js` to `server/sms-config.js` (gitignored) and paste:
+This uses **your Indian SIM**, not Twilio/Fast2SMS.
 
-- `FAST2SMS_API_KEY` from [Fast2SMS Dev API](https://www.fast2sms.com) → Authorization header ([docs](https://docs.fast2sms.com/reference/authorization))
+### 1. Turn on Text Message Forwarding
 
-Restart `npm run dev` after editing. Quick SMS uses `route=q` on `POST https://www.fast2sms.com/dev/bulkV2`. Numbers are sent as 10-digit Indian mobiles.
+1. iPhone and this Mac signed into the **same Apple ID**.
+2. iPhone nearby, Wi‑Fi or Bluetooth on.
+3. iPhone → **Settings → Apps → Messages → Text Message Forwarding** (or **Settings → Messages → Text Message Forwarding** on older iOS).
+4. Enable **this Mac**. Enter the code that appears on the Mac if asked.
+5. Open **Messages** on the Mac. Send one test SMS (green bubble) to your own number. If that works, forwarding is on.
+
+### 2. Allow the CRM to control Messages
+
+1. Keep `npm run dev` running.
+2. Send from the CRM once.
+3. macOS will ask: **osascript / node wants to control Messages** → **OK**.
+4. If you dismissed it: **System Settings → Privacy & Security → Automation** → enable Messages for `osascript` / `node`.
+
+### 3. Send from the table
+
+1. Open http://localhost:3002/leads
+2. **Chat bubble** = WhatsApp Web (you send by hand).
+3. **Message square** = SMS modal → type text → **Send SMS**.
+4. The Mac Messages app sends it; the iPhone radios it out. Status becomes **send**.
+
+Keep the iPhone unlocked or nearby. Bulk SMS goes one-by-one with a short pause.
 
 ## Pages
 
 - Dashboard
-- Leads (nested tables in the sidebar, Excel import creates a new table)
-- Messages (SMS templates)
-- Logs (send history in localStorage)
-
-Excel columns: Business / Category / City / Phone (header names are matched loosely).
+- Leads (nested tables, Excel import)
+- Messages (templates for the SMS modal)
+- Logs
