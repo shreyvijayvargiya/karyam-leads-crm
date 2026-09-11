@@ -1,6 +1,6 @@
 # Karyam Leads CRM
 
-Vite + Tailwind + shadcn + Framer Motion CRM for manufacturer outreach. Notion tokens live on `:root` / `html[data-theme="notion"]`. Data lives in the browser. The only server process is Twilio SMS.
+Vite + Tailwind + shadcn + Framer Motion CRM for manufacturer outreach. Notion tokens live on `:root` / `html[data-theme="notion"]`. Data lives in the browser. The only server process is Fast2SMS.
 
 ## Run
 
@@ -12,17 +12,13 @@ npm run dev
 App: http://localhost:3002  
 SMS API: http://127.0.0.1:8787
 
-## Twilio (3 values, hardcoded)
+## Fast2SMS (1 key)
 
-Paste into `server/sms-config.js`:
+Copy `server/sms-config.example.js` to `server/sms-config.js` (gitignored) and paste:
 
-- `TWILIO_ACCOUNT_SID`
-- `TWILIO_AUTH_TOKEN`
-- `TWILIO_FROM` (your Twilio number, E.164, e.g. `+1415…`)
+- `FAST2SMS_API_KEY` from [Fast2SMS Dev API](https://www.fast2sms.com) → Authorization header ([docs](https://docs.fast2sms.com/reference/authorization))
 
-No `.env` files. Restart `npm run dev` after editing.
-
-India numbers in the table (`+91 …`) are normalized before send.
+Restart `npm run dev` after editing. Quick SMS uses `route=q` on `POST https://www.fast2sms.com/dev/bulkV2`. Numbers are sent as 10-digit Indian mobiles.
 
 ## Pages
 

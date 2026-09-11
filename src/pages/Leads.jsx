@@ -6,7 +6,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MessageSquare, Pencil, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowUpDown, MessageCircle, MessageSquare, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { DEFAULT_TABLE_ID, STATUSES, useCrm } from "@/context/CrmContext";
 import { parseLeadWorkbook } from "@/lib/excel";
-import { cn } from "@/lib/utils";
+import { whatsappWebUrl } from "@/lib/utils";
 
 const EMPTY_FORM = {
 	business: "",
@@ -85,7 +85,7 @@ export function LeadsPage() {
 	const [form, setForm] = useState(EMPTY_FORM);
 	const [smsOpen, setSmsOpen] = useState(false);
 	const [smsTargets, setSmsTargets] = useState([]);
-	const [smsBody, setSmsBody] = useState(templates[0]?.body || "");
+	const [smsBody, setSmsBody] = useState("");
 	const [sending, setSending] = useState(false);
 
 	const cities = useMemo(
@@ -101,6 +101,23 @@ export function LeadsPage() {
 			return true;
 		});
 	}, [table, statusFilter, cityFilter]);
+
+	function openWhatsApp(lead) {
+		const url = whatsappWebUrl(lead.phone);
+		if (!url) {
+			toast.error("Invalid phone number");
+			return;
+		}
+		window.open(url, "_blank", "noopener,noreferrer");
+		addLog({
+			ok: true,
+			to: lead.phone,
+			business: lead.business,
+			body: "Opened WhatsApp Web",
+			tableId: activeId,
+			tableName: table?.name,
+		});
+	}
 
 	const columns = useMemo(
 		() => [
@@ -150,11 +167,21 @@ export function LeadsPage() {
 			},
 			{
 				id: "actions",
-				header: "SMS / edit",
+				header: "Actions",
 				cell: ({ row }) => (
 					<div className="flex items-center gap-1">
 						<Button
-							size="sm"
+							size="icon"
+							variant="ghost"
+							title="WhatsApp Web"
+							onClick={() => openWhatsApp(row.original)}
+						>
+							<MessageCircle className="h-4 w-4" />
+						</Button>
+						<Button
+							size="icon"
+							variant="ghost"
+							title="Send SMS"
 							onClick={() => {
 								setSmsTargets([row.original]);
 								setSmsBody(templates[0]?.body || "");
@@ -162,7 +189,6 @@ export function LeadsPage() {
 							}}
 						>
 							<MessageSquare className="h-4 w-4" />
-							SMS
 						</Button>
 						<Button
 							size="icon"
@@ -193,7 +219,7 @@ export function LeadsPage() {
 				),
 			},
 		],
-		[activeId, deleteLead, templates, updateLead]
+		[activeId, addLog, deleteLead, table?.name, templates, updateLead]
 	);
 
 	const reactTable = useReactTable({
@@ -320,7 +346,10 @@ export function LeadsPage() {
 			const sent = results.filter((item) => item.ok).length;
 			const failed = results.length - sent;
 			if (sent) toast.success(`Sent ${sent} SMS`);
-			if (failed) toast.error(`${failed} failed`);
+			if (failed) {
+				const firstError = results.find((item) => !item.ok)?.error;
+				toast.error(firstError || `${failed} failed`);
+			}
 			setSmsOpen(false);
 			setRowSelection({});
 		} catch (error) {
@@ -340,7 +369,7 @@ export function LeadsPage() {
 				<div>
 					<h1 className="text-2xl font-semibold tracking-tight">{table.name}</h1>
 					<p className="mt-1 text-sm text-muted-foreground">
-						Sort, search, filter, edit rows, import Excel as a new table, send SMS.
+						Sort, search, filter, edit rows. WhatsApp opens Web chat; SMS opens the send modal.
 					</p>
 				</div>
 				<div className="flex flex-wrap gap-2">
@@ -558,12 +587,12 @@ export function LeadsPage() {
 							Send SMS {smsTargets.length > 1 ? `to ${smsTargets.length} leads` : ""}
 						</DialogTitle>
 						<DialogDescription>
-							Uses Twilio from <code className="text-xs">server/sms-config.js</code>. Successful
-							sends mark status as <strong>send</strong>.
+							Uses Fast2SMS for Indian mobiles. Successful sends mark status as{" "}
+							<strong>send</strong>.
 						</DialogDescription>
 					</DialogHeader>
 					{smsTargets.length === 1 ? (
-						<p className={cn("rounded-xl border bg-muted px-3 py-2 text-sm")}>
+						<p className="rounded-xl border bg-muted px-3 py-2 text-sm">
 							{smsTargets[0].business} · {smsTargets[0].phone}
 						</p>
 					) : (
@@ -595,7 +624,11 @@ export function LeadsPage() {
 					) : null}
 					<div className="grid gap-1.5">
 						<Label>Message</Label>
-						<Textarea value={smsBody} onChange={(event) => setSmsBody(event.target.value)} rows={5} />
+						<Textarea
+							value={smsBody}
+							onChange={(event) => setSmsBody(event.target.value)}
+							rows={5}
+						/>
 					</div>
 					<DialogFooter>
 						<Button variant="outline" onClick={() => setSmsOpen(false)}>

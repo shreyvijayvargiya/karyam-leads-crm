@@ -1,18 +1,10 @@
 /**
- * Paste your Twilio credentials here once. No .env files needed.
- * Console: https://console.twilio.com
+ * Paste your Fast2SMS Authorization key from
+ * https://www.fast2sms.com (Dev API). This file is gitignored.
  */
-export const TWILIO_ACCOUNT_SID = "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-export const TWILIO_AUTH_TOKEN = "paste_twilio_auth_token_here";
-export const TWILIO_FROM = "+1XXXXXXXXXX";
+export const FAST2SMS_API_KEY = "pV9N0rvj4KFUs1tnMXiAlweQRbWG2kZgaDL6E3dCmJucIB5Yh7ECzl5q4vS1HcVsUkZwIJpQATjgW8FG";
 
-export function twilioReady() {
-	return (
-		TWILIO_ACCOUNT_SID.startsWith("AC") &&
-		!TWILIO_ACCOUNT_SID.includes("xxxx") &&
-		TWILIO_AUTH_TOKEN.length > 20 &&
-		!TWILIO_AUTH_TOKEN.includes("paste_") &&
-		TWILIO_FROM.startsWith("+") &&
-		!TWILIO_FROM.includes("XXXX")
-	);
+export function smsReady() {
+	const key = String(FAST2SMS_API_KEY || "").trim();
+	return key.length > 20 && !key.includes("PASTE_");
 }

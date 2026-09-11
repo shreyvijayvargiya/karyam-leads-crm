@@ -13,6 +13,7 @@ dist-ssr
 *.local
 .env
 .env.*
+server/sms-config.js
 
 # Editor directories and files
 .vscode/*
